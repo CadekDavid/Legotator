@@ -1,0 +1,52 @@
+import os
+import time
+import requests
+import pandas as pd
+
+
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+csv_path = os.path.join(script_dir, "../data/brickset_clean.csv")
+image_dir = os.path.join(script_dir, "../data/images")
+
+os.makedirs(image_dir, exist_ok=True)
+
+print("📸 Načítám vyčištěná data pro stahování fotek...")
+df = pd.read_csv(csv_path)
+
+total_sets = len(df)
+print(f"Připraveno ke stažení fotek pro {total_sets} kvalitních setů.")
+
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+}
+
+success_count = 0
+
+for index, row in df.iterrows():
+    set_num = row['set_num']
+    image_path = os.path.join(image_dir, f"{set_num}.jpg")
+
+    if os.path.exists(image_path):
+        continue
+
+    image_url = f"https://images.brickset.com/sets/images/{set_num}.jpg"
+
+    try:
+        response = requests.get(image_url, headers=HEADERS, timeout=10)
+
+        if response.status_code == 200:
+            with open(image_path, 'wb') as f:
+                f.write(response.content)
+            success_count += 1
+            print(f"[{index + 1}/{total_sets}] ✅ Stažena fotka: {set_num}.jpg")
+        else:
+            print(f"[{index + 1}/{total_sets}] ⚠️ Fotka pro {set_num} na serveru chybí.")
+
+
+        time.sleep(1)
+
+    except Exception as e:
+        print(f"❌ Chyba sítě u setu {set_num}: {e}")
+
+print(f"\n🎉 HOTOVO! Nově staženo {success_count} fotek do složky {image_dir}")
