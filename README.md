@@ -30,9 +30,9 @@ pip install -r requirements.txt
 ```
 
 ### Spuštění aplikace
-Aplikaci lze spustit dvěma způsoby:
+
 * **Přes terminál:** `python app.py`
-* **Přes spouštěč (Windows):** Dvojklikem na soubor `Spustit_Skener.bat` v kořenové složce.
+
 
 > **Poznámka:** Při prvním spuštění může trvat několik sekund, než se do paměti načte neurónová síť (TensorFlow engine).
 
